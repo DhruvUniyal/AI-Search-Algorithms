@@ -1,27 +1,26 @@
-import datetime as dt
+import time 
 from node import Node
 from structures import Queue
 from PIL import Image, ImageDraw
-
 
 class BreadthFirstSearch():
     def __init__(self, filename):
 
         # Read file and set height and width of maze
         with open(filename) as f:
-            lines = f.read()
+            contents = f.read()
 
         # Validate start and goal
-        if lines.count("A") != 1:
+        if contents.count("A") != 1:
             raise Exception("maze must have exactly one start point")
-        if lines.count("B") != 1:
+        if contents.count("B") != 1:
             raise Exception("maze must have exactly one goal")
 
         # Determine height and width of maze
-        lines = lines.splitlines()
-        # print(lines)
-        self.height = len(lines)
-        self.width = max(len(line) for line in lines)
+        contents = contents.splitlines()
+        # print(contents)
+        self.height = len(contents)
+        self.width = max(len(line) for line in contents)
 
         # Keep track of walls
         self.walls = []
@@ -29,13 +28,13 @@ class BreadthFirstSearch():
             row = []
             for j in range(self.width):
                 try:
-                    if lines[i][j] == "A":
+                    if contents[i][j] == "A":
                         self.start = (i, j)
                         row.append(False)
-                    elif lines[i][j] == "B":
+                    elif contents[i][j] == "B":
                         self.goal = (i, j)
                         row.append(False)
-                    elif lines[i][j] == " ":
+                    elif contents[i][j] == " ":
                         row.append(False)
                     else:
                         row.append(True)
@@ -63,6 +62,7 @@ class BreadthFirstSearch():
             print()
         print()
 
+
     def neighbors(self, state):
         row, col = state
         candidates = [
@@ -78,13 +78,14 @@ class BreadthFirstSearch():
                 result.append((action, (r, c)))
         return result
 
+
     def solve(self):
         """Finds a solution to maze, if one exists."""
 
         # Keep track of number of states explored
         self.num_explored = 0
         self.time_taken = 0
-        startTime = dt.datetime.now()
+        startTime = time.time()
 
         # Initialize frontier to just the starting position
         start = Node(state=self.start, parent=None, action=None)
@@ -114,8 +115,7 @@ class BreadthFirstSearch():
                 actions.reverse()
                 cells.reverse()
                 self.solution = (actions, cells)
-                endTime = dt.datetime.now()
-                self.time_taken = endTime - startTime
+                self.time_taken = time.time()-startTime
                 return
 
             # Mark node as explored
@@ -147,32 +147,32 @@ class BreadthFirstSearch():
 
                 # Walls
                 if col:
-                    fill = (40, 40, 40)
+                    fill = (46, 41, 41)
 
                 # Start
                 elif (i, j) == self.start:
-                    fill = (255, 0, 0)
+                    fill = (0, 0, 255)
                     self.num_explored += 1
 
                 # Goal
                 elif (i, j) == self.goal:
-                    fill = (0, 171, 28)
+                    fill = (1, 148, 1)
                     self.num_explored += 1
 
                 # Solution
                 elif solution is not None and show_solution and (i, j) in solution:
-                    fill = (249, 97, 103)
+                    fill = (252,60,60)
                     self.num_explored += 1
                     self.path_length += 1
 
                 # Explored
                 elif solution is not None and show_explored and (i, j) in self.explored:
-                    fill = (252, 252, 125)
+                    fill = (255, 165, 165)
                     self.num_explored += 1
 
                 # Empty cell
                 else:
-                    fill = (237, 240, 252)
+                    fill = (255, 255, 255)
 
                 # Draw cell
                 draw.rectangle(
@@ -180,9 +180,10 @@ class BreadthFirstSearch():
                       ((j + 1) * cell_size - cell_border, (i + 1) * cell_size - cell_border)]),
                     fill=fill
                 )
-        if (empty):
-            img.save("maze.png")
-        if (show_explored):
-            img.save("BFS.png")
+        if(empty):
+            img.save("images/maze.png")
         else:
-            img.save("BFS-noexplored.png")
+            if(show_explored):
+                img.save("images/BFS.png")
+            else:
+                img.save("images/BFS-noexplored.png")

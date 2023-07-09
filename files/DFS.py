@@ -1,4 +1,4 @@
-import datetime as dt 
+import time
 from node import Node
 from structures import Stack
 from PIL import Image, ImageDraw
@@ -77,24 +77,24 @@ class DepthFirstSearch():
         self.num_explored = 0
         self.path_length = 0
         self.time_taken = 0
-        startTime = dt.datetime.now()
+        startTime = time.time()
 
-        # Initialize nodelist to just the starting position
+        # Initialize frontier to just the starting position
         start = Node(state=self.start, parent=None, action=None)
-        nodelist = Stack()
-        nodelist.add(start)
+        frontier = Stack()
+        frontier.add(start)
 
         # Initialize an empty explored set
         self.explored = set()
 
         # Keep looping until solution found
         while True:
-            # If nothing left in nodelist, then no path
-            if nodelist.empty():
+            # If nothing left in frontier, then no path
+            if frontier.empty():
                 raise Exception("no solution")
             
-            # Choose a node from the nodelist
-            node = nodelist.remove()
+            # Choose a node from the frontier
+            node = frontier.remove()
 
             # If node is the goal, then we have a solution
             if node.state == self.goal:
@@ -107,18 +107,17 @@ class DepthFirstSearch():
                 actions.reverse()
                 cells.reverse()
                 self.solution = (actions, cells)
-                endTime = dt.datetime.now()
-                self.time_taken = endTime - startTime
+                self.time_taken = time.time()-startTime
                 return
 
             # Mark node as explored
             self.explored.add(node.state)
 
-            # Add neighbors to nodelist
+            # Add neighbors to frontier
             for action, state in self.neighbors(node.state):
-                if not nodelist.contains_state(state) and state not in self.explored:
+                if not frontier.contains_state(state) and state not in self.explored:
                     child = Node(state=state, parent=node, action=action)
-                    nodelist.add(child)
+                    frontier.add(child)
             
     
     def output_image(self, show_solution=True, show_explored=False):
@@ -139,32 +138,32 @@ class DepthFirstSearch():
 
                 # Walls
                 if col:
-                    fill = (40, 40, 40)
+                    fill = (46, 41, 41)
 
                 # Start
                 elif (i, j) == self.start:
-                    fill = (255, 0, 0)
+                    fill = (0, 0, 255)
                     self.num_explored += 1
 
                 # Goal
                 elif (i, j) == self.goal:
-                    fill = (0, 171, 28)
+                    fill = (1, 148, 1)
                     self.num_explored += 1
 
                 # Solution
                 elif solution is not None and show_solution and (i, j) in solution:
-                    fill = (249, 97, 103)
+                    fill = (252,60,60)
                     self.num_explored += 1
                     self.path_length += 1
 
                 # Explored
                 elif solution is not None and show_explored and (i, j) in self.explored:
-                    fill = (252,252,125)
+                    fill = (255, 165, 165)
                     self.num_explored += 1
 
                 # Empty cell
                 else:
-                    fill = (237, 240, 252)
+                    fill = (255, 255, 255)
 
                 # Draw cell
                 draw.rectangle(
@@ -174,6 +173,6 @@ class DepthFirstSearch():
                 )
 
         if(show_explored):
-            img.save("DFS.png")
+            img.save("images/DFS.png")
         else:
-            img.save("DFS-noexplored.png")
+            img.save("images/DFS-noexplored.png")

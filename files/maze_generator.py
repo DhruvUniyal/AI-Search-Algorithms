@@ -47,7 +47,7 @@ goal_x,goal_y = random.randint(maze_len//2+1,maze_len-2),random.randint(1,maze_w
 maze[start_x][start_y] = "A"
 maze[goal_x][goal_y] = "B"
 
-maze_file = open("random_maze.txt","w+")
+maze_file = open("maze/random_maze.txt","w+")
 for i in range(0,maze_len):
     str = ""
     for j in range(0,maze_width):
